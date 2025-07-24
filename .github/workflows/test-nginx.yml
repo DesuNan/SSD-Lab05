@@ -1,0 +1,28 @@
+name: Lab 5 - Nginx CI Build
+
+on:
+  push:
+    paths:
+      - '**.html'
+      - '**.conf'
+      - '**.yml'
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Nginx container
+        run: docker compose -f nginx-compose.yml build
+
+      - name: HTML lint check
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tidy
+          tidy -e index.html || true
